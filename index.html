@@ -43,7 +43,7 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
-        <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.11/dist/lenis.css">
+    <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.11/dist/lenis.css">
 </head>
 
 <body>
@@ -58,22 +58,7 @@
         </div>
         <button class="btn btn-primary" onclick="generateDivs()">Check Color Contrast</button>
 
-
-        <h2 class="mt-5">Contrast Ratio Table</h2>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Text Color</th>
-                    <th>Background Color</th>
-                    <th>Contrast Ratio</th>
-                    <th>Category</th>
-                </tr>
-            </thead>
-            <tbody id="contrastTableBody">
-                <!-- Rows will be added dynamically -->
-            </tbody>
-        </table>
-
+        <h2 class="mt-5 mb-3">Preview Colours</h2>
         <div class="accordion" id="contrastAccordion mt-5">
             <div class="accordion-item">
                 <h2 class="accordion-header" id="heading4.5">
@@ -111,10 +96,26 @@
                 </div>
             </div>
         </div>
+
+        <h2 class="mt-5">Contrast Ratio Table</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Text Color</th>
+                    <th>Background Color</th>
+                    <th>Contrast Ratio</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+            <tbody id="contrastTableBody">
+                <!-- Rows will be added dynamically -->
+            </tbody>
+        </table>
+
     </div>
 
     <script src="https://unpkg.com/lenis@1.1.11/dist/lenis.min.js"></script>
-    
+
     <script>
         function generateDivs() {
             const colorInput = document.getElementById('colorInput').value.trim();
