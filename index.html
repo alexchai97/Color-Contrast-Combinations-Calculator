@@ -22,6 +22,19 @@
             width: 150px;
             height: 150px;
         }
+
+        table {
+            margin-top: 20px;
+        }
+
+        .color-cell {
+            width: 150px;
+            height: 50px;
+        }
+
+        th {
+            text-align: center;
+        }
     </style>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -29,62 +42,89 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+
+        <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.11/dist/lenis.css">
 </head>
 
 <body>
     <div class="container mt-5">
         <h1>Color Contrast Checker</h1>
-        <p class="lead">WCAG AA Checker for a combination of colours</p>
+        <p class="lead">For a combination of colours</p>
 
         <div class="form-group">
             <label for="colorInput" class="mb-2">Colour List:</label>
             <textarea id="colorInput" name="colorInput" class="mb-3 form-control" rows="5"
                 placeholder="Enter colors here, one per line..."></textarea>
         </div>
-        <button class="btn btn-primary mb-5" onclick="generateDivs()">Check Color Contrast</button>
+        <button class="btn btn-primary" onclick="generateDivs()">Check Color Contrast</button>
 
-        <div class="accordion" id="contrastAccordion">
+
+        <h2 class="mt-5">Contrast Ratio Table</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Text Color</th>
+                    <th>Background Color</th>
+                    <th>Contrast Ratio</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+            <tbody id="contrastTableBody">
+                <!-- Rows will be added dynamically -->
+            </tbody>
+        </table>
+
+        <div class="accordion" id="contrastAccordion mt-5">
             <div class="accordion-item">
                 <h2 class="accordion-header" id="heading4.5">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4.5" aria-expanded="false" aria-controls="collapse4.5">
-                        For text below 17pt (Contrast Ratio >= 4.5)
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapse4.5" aria-expanded="false" aria-controls="collapse4.5">
+                        For text below 17pt, Large Text and Icons (Contrast Ratio >= 4.5)
                     </button>
                 </h2>
-                <div id="collapse4.5" class="accordion-collapse collapse" aria-labelledby="heading4.5" data-bs-parent="#contrastAccordion">
+                <div id="collapse4.5" class="accordion-collapse collapse" aria-labelledby="heading4.5"
+                    data-bs-parent="#contrastAccordion">
                     <div id="output4.5" class="accordion-body output"></div>
                 </div>
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header" id="heading3">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
-                        For Large Text and Icons Only (Contrast Ratio >= 3)
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                        For Large Text (>= 17pt) and Icons Only (Contrast Ratio >= 3)
                     </button>
                 </h2>
-                <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3" data-bs-parent="#contrastAccordion">
+                <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3"
+                    data-bs-parent="#contrastAccordion">
                     <div id="output3" class="accordion-body output"></div>
                 </div>
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingFail">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFail" aria-expanded="false" aria-controls="collapseFail">
-                        Failed (Contrast Ratio < 3)
-                    </button>
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseFail" aria-expanded="false" aria-controls="collapseFail">
+                        Failed (Contrast Ratio < 3) </button>
                 </h2>
-                <div id="collapseFail" class="accordion-collapse collapse" aria-labelledby="headingFail" data-bs-parent="#contrastAccordion">
+                <div id="collapseFail" class="accordion-collapse collapse" aria-labelledby="headingFail"
+                    data-bs-parent="#contrastAccordion">
                     <div id="output-fail" class="accordion-body output"></div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="https://unpkg.com/lenis@1.1.11/dist/lenis.min.js"></script>
+    
     <script>
         function generateDivs() {
             const colorInput = document.getElementById('colorInput').value.trim();
             const colors = colorInput.split('\n').filter(line => line);
-            
-            // Clear the output divs
+
+            // Clear the output divs and table
             document.getElementById('output4.5').innerHTML = '';
             document.getElementById('output3').innerHTML = '';
             document.getElementById('output-fail').innerHTML = '';
+            document.getElementById('contrastTableBody').innerHTML = '';
 
             const combinations = [];
 
@@ -112,12 +152,32 @@
                 // Categorize and append based on contrast ratio
                 if (contrastRatio >= 4.5) {
                     document.getElementById('output4.5').appendChild(div);
+                    addTableRow(textColor, bgColor, contrastRatio.toFixed(2), 'Passed (Contrast Ratio >= 4.5)');
                 } else if (contrastRatio >= 3) {
                     document.getElementById('output3').appendChild(div);
+                    addTableRow(textColor, bgColor, contrastRatio.toFixed(2), 'For Large Text and Icons Only (Contrast Ratio >= 3)');
                 } else {
                     document.getElementById('output-fail').appendChild(div);
+                    addTableRow(textColor, bgColor, contrastRatio.toFixed(2), 'Failed (Contrast Ratio < 3)');
                 }
             });
+        }
+
+        function addTableRow(textColor, bgColor, contrastRatio, category) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="color-cell" style="background-color: ${textColor}; color: ${getContrastingColor(textColor)};">${textColor}</td>
+                <td class="color-cell" style="background-color: ${bgColor}; color: ${getContrastingColor(bgColor)};">${bgColor}</td>
+                <td>${contrastRatio}</td>
+                <td>${category}</td>
+            `;
+            document.getElementById('contrastTableBody').appendChild(row);
+        }
+
+        function getContrastingColor(color) {
+            const rgb = getRGBValues(color);
+            const luminance = getLuminance(rgb);
+            return luminance > 0.5 ? '#000000' : '#FFFFFF';
         }
 
         // Helper function to calculate the luminance of a color
@@ -146,6 +206,19 @@
             const data = ctx.getImageData(0, 0, 1, 1).data;
             return [data[0], data[1], data[2]];
         }
+
+        const lenis = new Lenis()
+
+        lenis.on('scroll', (e) => {
+            console.log(e)
+        })
+
+        function raf(time) {
+            lenis.raf(time)
+            requestAnimationFrame(raf)
+        }
+
+        requestAnimationFrame(raf)
     </script>
 </body>
 
